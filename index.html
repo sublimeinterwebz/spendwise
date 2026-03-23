@@ -15,7 +15,7 @@
     --accent: #e8ff4d; --accent2: #ff6b6b; --accent3: #4dffb4;
     --text: #f0f0f5; --muted: #7a7a8c;
   }
-  html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; max-width: 430px; margin: 0 auto; overflow-x: hidden; }
+  html, body { background: var(-w-bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; max-width: 430px; margin: 0 auto; overflow-x: hidden; }
 
   /* ── LOADING SCREEN ─────────────────────────────── */
   #loadingScreen {
@@ -810,7 +810,7 @@ function renderSummary() {
 }
 
 // ── Gemini analysis ───────────────────────────────────────
-const GEMINI_KEY = 'AIzaSyC9yl3KCqeTP45WVV18TkP33cSlhlEOW-k';
+const GEMINI_KEY = 'AIzaSyChoBzi08w27_yIGWLtNa22uueM0SVJBIQ';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + GEMINI_KEY;
 
 async function fetchGeminiAnalysis(txs) {
