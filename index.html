@@ -199,6 +199,9 @@
   .analysis-spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .analysis-error { font-size: 12px; color: var(--muted); font-style: italic; }
+  .analysis-refresh { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; border-radius: 6px; transition: color 0.2s, transform 0.3s; line-height: 1; }
+  .analysis-refresh:active { color: var(--accent); }
+  .analysis-refresh.spinning { animation: spin 0.8s linear infinite; }
 
   .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent3); display: inline-block; margin-left: 6px; vertical-align: middle; transition: background 0.3s; }
   .sync-dot.syncing { background: #fdcb6e; animation: pulse 1s infinite; }
@@ -289,7 +292,10 @@
     <div class="analysis-card" id="analysisCard">
       <div class="analysis-header">
         <div class="analysis-title">Expense Analysis</div>
-        <div class="analysis-badge">AI</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="analysis-badge">AI</div>
+          <button class="analysis-refresh" id="analysisRefreshBtn" title="Refresh analysis">↻</button>
+        </div>
       </div>
       <div id="analysisContent">
         <div class="analysis-loading"><div class="analysis-spinner"></div>Generating analysis…</div>
@@ -804,7 +810,7 @@ function renderSummary() {
 }
 
 // ── Gemini analysis ───────────────────────────────────────
-const GEMINI_KEY = 'AIzaSyAcS-IqFkqMLZ673Nx5as3jsS3Bv_dImxE';
+const GEMINI_KEY = 'AIzaSyBu10p9mFzhIW_a8EhBhEjKYg_Dp8XzRaY';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + GEMINI_KEY;
 
 async function fetchGeminiAnalysis(txs) {
@@ -911,6 +917,19 @@ Provide a natural, insightful 3-4 sentence analysis covering: top spending categ
 }
 
 function render() { updateCycleLabel(); buildCatFilter(); renderTransactions(); }
+
+// ── analysis refresh button ───────────────────────────────
+document.getElementById('analysisRefreshBtn').addEventListener('click', () => {
+  // Clear cache for current cycle + today so a fresh call is made
+  const todayDate = new Date().toISOString().split('T')[0];
+  const cacheKey = 'spendwise_analysis_' + (currentUser?.uid || 'anon') + '_' + cycleOffset + '_' + todayDate;
+  try { localStorage.removeItem(cacheKey); } catch(e) {}
+  // Spin the button while loading
+  const btn = document.getElementById('analysisRefreshBtn');
+  btn.classList.add('spinning');
+  const txs = getCycleExpenses();
+  fetchGeminiAnalysis(txs).finally(() => btn.classList.remove('spinning'));
+});
 
 // ── cat grids ─────────────────────────────────────────────
 function buildCatGrid() {
