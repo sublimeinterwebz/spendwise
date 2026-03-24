@@ -14,6 +14,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Debug - list files
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in directory:"
+          ls -la
+
       - name: Inject Gemini API key
         run: sed -i "s|YOUR_GEMINI_API_KEY|${{ secrets.GEMINI_API_KEY }}|g" index.html
 
